@@ -1,21 +1,42 @@
 import React from 'react';
-import { 
-  MapPin, 
-  Phone, 
-  Mail, 
+import {
+  MapPin,
+  Phone,
+  Mail,
   Clock,
   Send,
   ExternalLink
 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useState } from "react";
+import emailjs from "emailjs-com";
 
 const Contact: React.FC = () => {
   const { t } = useLanguage();
 
+  const [form, setForm] = useState({ name: "", email: "", phoneNumber: "", subject: "", message: "" });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    emailjs
+      .send(
+        "service_6qzrt5v",
+        "template_9hww0cx",
+        {
+          from_name: form.name,
+          to_email: form.email,
+          form_phoneNumber: form.phoneNumber,
+          form_subject: form.subject,
+          form_message: form.message,
+        },
+        "aq4lg1BSA7idZo_NZ"
+      )
+      .then(() => alert("Email đã gửi thành công!"))
+      .catch((err) => alert("Gửi email thất bại: " + err.text));
     alert('Thank you for your message! We will get back to you soon.');
   };
+
 
   return (
     <section id="contact" className="py-20 bg-gray-50 dark:bg-gray-800">
@@ -25,7 +46,7 @@ const Contact: React.FC = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
             {t('contact.title')}
           </h2>
-    
+
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
@@ -41,7 +62,7 @@ const Contact: React.FC = () => {
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                   {t('contact.address')}
                 </p>
-                <a 
+                <a
                   href="https://www.google.com/maps/place/399+Nguy%E1%BB%85n+Tri+Ph%C6%B0%C6%A1ng,+Ph%C6%B0%E1%BB%9Dng+8,+Qu%E1%BA%ADn+10,+H%E1%BB%93+Ch%C3%AD+Minh,+Vietnam/@10.763412,106.667875,16z/data=!4m6!3m5!1s0x31752ee429450c95:0x4166b63ccf996a0c!8m2!3d10.7634115!4d106.6678745!16s%2Fg%2F11j0srvjrf?entry=ttu"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -85,7 +106,7 @@ const Contact: React.FC = () => {
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                   {t('contact.email')}
                 </h4>
-                <a 
+                <a
                   href="mailto:tovannhan.vn@gmail.com"
                   className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors"
                 >
@@ -130,6 +151,7 @@ const Contact: React.FC = () => {
                     required
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-colors"
                     placeholder="Your full name"
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                   />
                 </div>
                 <div>
@@ -141,6 +163,7 @@ const Contact: React.FC = () => {
                     required
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-colors"
                     placeholder="your.email@example.com"
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
                   />
                 </div>
               </div>
@@ -154,6 +177,7 @@ const Contact: React.FC = () => {
                   type="tel"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-colors"
                   placeholder="+84 123 456 789"
+                  onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
                 />
               </div>
 
@@ -165,6 +189,7 @@ const Contact: React.FC = () => {
                 <select
                   required
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-colors"
+                  onChange={(e) => setForm({ ...form, subject: e.target.value })}
                 >
                   <option value="">Select a subject</option>
                   <option value="quote">Request a Quote</option>
@@ -185,6 +210,7 @@ const Contact: React.FC = () => {
                   rows={6}
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-colors resize-none"
                   placeholder="Tell us about your translation needs..."
+                  onChange={(e) => setForm({ ...form, message: e.target.value })}
                 />
               </div>
 
