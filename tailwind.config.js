@@ -38,6 +38,7 @@ export default {
         'slide-up': 'slideUp 0.6s ease-out',
         'slide-down': 'slideDown 0.6s ease-out',
         'scale-in': 'scaleIn 0.5s ease-out',
+        'scroll': 'scroll 36s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -55,6 +56,10 @@ export default {
         scaleIn: {
           '0%': { transform: 'scale(0.95)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        scroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
         },
       },
       spacing: {
