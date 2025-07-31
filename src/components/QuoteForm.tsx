@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import emailjs from '@emailjs/browser';
+import Swal from 'sweetalert2';
 import { 
   Send, 
   Upload, 
@@ -69,24 +71,73 @@ const QuoteForm: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Convert first file to base64 (EmailJS free plan supports one file as base64 string)
+    let fileBase64 = '';
+    if (formData.files.length > 0) {
+      const file = formData.files[0];
+      fileBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = error => reject(error);
+      });
+    }
 
-    alert('Yêu cầu báo giá đã được gửi thành công! Chúng tôi sẽ liên hệ với bạn trong vòng 15 phút.');
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      fromLanguage: '',
-      toLanguage: '',
-      deadline: '',
-      notes: '',
-      files: []
-    });
+    // Prepare template params (match your EmailJS template variables)
+    const templateParams = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      fromLanguage: formData.fromLanguage,
+      toLanguage: formData.toLanguage,
+      deadline: formData.deadline,
+      notes: formData.notes,
+      file: fileBase64,
+      file_name: formData.files[0]?.name || ''
+    };
 
-    setIsSubmitting(false);
+    try {
+      await emailjs.send(
+        'service_4m0obwp', // Your service ID
+        'template_5ceupqg', // <-- Replace with your actual template ID from EmailJS
+        templateParams,
+        'VCt1z8ArfJUd9iSEY' // Your public key
+      );
+      
+      await Swal.fire({
+        title: 'Thành công!',
+        text: 'Yêu cầu báo giá đã được gửi thành công! Chúng tôi sẽ liên hệ với bạn trong vòng 15 phút.',
+        icon: 'success',
+        confirmButtonText: 'Đóng',
+        confirmButtonColor: '#3B82F6',
+        timer: 5000,
+        timerProgressBar: true,
+        showCloseButton: true
+      });
+
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        fromLanguage: '',
+        toLanguage: '',
+        deadline: '',
+        notes: '',
+        files: []
+      });
+    } catch (err) {
+      await Swal.fire({
+        title: 'Lỗi!',
+        text: 'Gửi yêu cầu thất bại. Vui lòng thử lại hoặc liên hệ trực tiếp.',
+        icon: 'error',
+        confirmButtonText: 'Thử lại',
+        confirmButtonColor: '#EF4444',
+        showCancelButton: true,
+        cancelButtonText: 'Đóng'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const formatFileSize = (bytes: number) => {

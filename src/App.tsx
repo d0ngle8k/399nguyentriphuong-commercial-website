@@ -1,13 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import Header from './components/Header';
-import Hero from './components/Hero';
-import Services from './components/Services';
-import WhyChooseUs from './components/WhyChooseUs';
-import QuoteForm from './components/QuoteForm';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
+
+// Lazy load components
+const Hero = React.lazy(() => import('./components/Hero'));
+const Services = React.lazy(() => import('./components/Services'));
+const WhyChooseUs = React.lazy(() => import('./components/WhyChooseUs'));
+const QuoteForm = React.lazy(() => import('./components/QuoteForm'));
+const Contact = React.lazy(() => import('./components/Contact'));
+const Footer = React.lazy(() => import('./components/Footer'));
 
 function App() {
   useEffect(() => {
@@ -39,13 +41,25 @@ function App() {
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
           <Header />
           <main>
-            <Hero />
-            <Services />
-            <WhyChooseUs />
-            <QuoteForm />
-            <Contact />
+            <Suspense fallback={<div className="h-screen flex items-center justify-center">Loading...</div>}>
+              <Hero />
+            </Suspense>
+            <Suspense fallback={<div className="h-96 flex items-center justify-center">Loading...</div>}>
+              <Services />
+            </Suspense>
+            <Suspense fallback={<div className="h-96 flex items-center justify-center">Loading...</div>}>
+              <WhyChooseUs />
+            </Suspense>
+            <Suspense fallback={<div className="h-96 flex items-center justify-center">Loading...</div>}>
+              <QuoteForm />
+            </Suspense>
+            <Suspense fallback={<div className="h-96 flex items-center justify-center">Loading...</div>}>
+              <Contact />
+            </Suspense>
           </main>
-          <Footer />
+          <Suspense fallback={<div className="h-40 flex items-center justify-center">Loading...</div>}>
+            <Footer />
+          </Suspense>
         </div>
       </LanguageProvider>
     </ThemeProvider>
